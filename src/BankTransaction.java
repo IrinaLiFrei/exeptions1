@@ -3,24 +3,37 @@ import java.util.Scanner;
 
 public class BankTransaction {
     public static void main(String[] args) {
-        int balance = 10000;
-        try {
-            int a = getInt("Введите сумму перевода: ");
-            System.out.println("Перевод выполнен успешно. Остаток на счете: " + transfer(a, balance));
-        } catch (InvalidAmountException | InsufficientFundsException ex) {
-            System.out.println(ex.getMessage() + " Ваш баланс: " + balance);
+        int currentAccountBalance = 10000;
+        int targetAccountBalance = 0;
+
+        while (true) {
+            try {
+                int a = getInt("Введите сумму перевода: ");
+                currentAccountBalance = transferFunds(a, currentAccountBalance);
+                System.out.println("Перевод выполнен успешно." + "\n" + "Остаток на счете отправителя: " + currentAccountBalance);
+                targetAccountBalance += a;
+                System.out.println("Остаток на счете получателя: " + targetAccountBalance);
+                if (currentAccountBalance == 0) {
+                    System.out.println();
+                    System.out.println("Ваш баланс равен нулю. Дальнейшие переводы невозможны.");
+                    return;
+                }
+            } catch (InvalidAmountException | InsufficientFundsException ex) {
+                System.out.println(ex.getMessage() + " Ваш баланс: " + currentAccountBalance);
+            }
         }
 }
 
-    public static int transfer(int a, int b) throws InvalidAmountException, InsufficientFundsException {
+    public static int transferFunds(int a, int b) throws InvalidAmountException, InsufficientFundsException {
         if (a == 0 || a < 0) {
             throw new InvalidAmountException("Некорректная сумма перевода.");
         }
-        if (b - a <= 0){
+        if (b - a < 0){
             throw new InsufficientFundsException("Недостаточно средств для перевода.");
         }
         return b - a;
     }
+
 
     public static int getInt(String message) {
         Scanner scanner = new Scanner(System.in);
